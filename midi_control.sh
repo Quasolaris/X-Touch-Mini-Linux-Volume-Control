@@ -16,6 +16,26 @@ count_missing() {
     echo "$cnt"
 }
 
+printapplications(){
+  clear
+  echo "========================================================="
+  echo "  Stream IDs under volume control per Knob"
+  echo "========================================================="
+  for name in "${knob_ids[@]}"; do
+      printf '  %-4s = \e[31m %s \e[0m\n' "$name" "${!name}"
+  done
+
+  echo 
+  echo
+  echo "========================================================="
+  echo "  Applications under volume control per Knob"
+  echo "========================================================="
+  for name in "${knob_apps[@]}"; do
+      printf '  %-4s = \e[36m %s \e[0m \n' "$name" "${!name}"
+      echo "-----------------------------------------------------"
+  done
+}
+
 echo "================================="
 printf "\e[31mX-Touch MINI \e[36mLinux \e[32mVolume Control\e[0m\n"
 echo "================================="
@@ -31,7 +51,7 @@ echo "------------------------------------------"
 wpctl status | sed -n '/Streams:/,/Video/p; /Video/q'
 
 echo
-echo "To add application enter the ID (ex. 134. Strawberry -> 134 is the ID"
+echo "To add application enter the ID (ex. 134. Strawberry -> 134 is the ID)"
 echo "To stop filling applications just hit enter without a value entered"
 echo
 
@@ -40,10 +60,6 @@ while (( $(count_missing) > 0 )); do
     if [[ $filledAppliactions > 0 ]]; then
       break 
     fi
-    # Show a short status line so the user knows what’s left
-    echo
-    printf "\e[36mYou can still fill in $(count_missing) application streams.\e[0m\n"
-    echo
 
     # Iterate over the variables that are still empty
     for name in "${knob_ids[@]}"; do
@@ -54,7 +70,7 @@ while (( $(count_missing) > 0 )); do
 
         # Reject empty input (pressing Enter without typing)
         if [[ -z "$input" ]]; then
-            echo "  → Nothing entered – Stopping application collection"
+            printf "\e[31m  → Nothing entered – Stopping application collection\e[0m\n"
             filledAppliactions=1
             break
         fi
@@ -88,22 +104,7 @@ for name in "${knob_apps[@]}"; do
   index=$((index+1))
 done
 
-echo "========================================================="
-echo "Stream IDs under volume control per Knob"
-echo "========================================================="
-for name in "${knob_ids[@]}"; do
-    printf '  %-4s = \e[31m %s \e[0m\n' "$name" "${!name}"
-done
-
-echo 
-echo
-echo "========================================================="
-echo "Applications under volume control per Knob"
-echo "========================================================="
-for name in "${knob_apps[@]}"; do
-    printf '  %-4s = \e[36m %s \e[0m \n' "$name" "${!name}"
-    echo "-----------------------------------------------------"
-done
+printapplications
 
 aseqdump -p  "X-TOUCH MINI" |
 {
@@ -185,6 +186,12 @@ aseqdump -p  "X-TOUCH MINI" |
       22) 
         if (( $ctrl_value == "127" )); 
           then playerctl play
+        fi
+        ;;
+
+      23) 
+        if (( $ctrl_value == "127" )); 
+          then printapplications
         fi
         ;;
       
