@@ -16,17 +16,24 @@ count_missing() {
     echo "$cnt"
 }
 
+echo "================================="
+printf "\e[31mX-Touch MINI \e[36mLinux \e[32mVolume Control\e[0m\n"
+echo "================================="
 
 filledAppliactions=0
 
-echo "---------------------------------"
-echo "Set Applications to control"
-echo "---------------------------------"
-echo "To stop filling applications just hit enter"
+echo "------------------------------------------"
+echo "Set Applications Audio Streams to control"
+echo "------------------------------------------"
+
 
 # printing out streams to control
-wpctl status | grep "Streams" -A 40
+wpctl status | sed -n '/Streams:/,/Video/p; /Video/q'
 
+echo
+echo "To add application enter the ID (ex. 134. Strawberry -> 134 is the ID"
+echo "To stop filling applications just hit enter without a value entered"
+echo
 
 # asking user to fill in streams (applications)
 while (( $(count_missing) > 0 )); do
@@ -34,7 +41,9 @@ while (( $(count_missing) > 0 )); do
       break 
     fi
     # Show a short status line so the user knows what’s left
-    echo "You can still fill in $(count_missing) applications."
+    echo
+    printf "\e[36mYou can still fill in $(count_missing) application streams.\e[0m\n"
+    echo
 
     # Iterate over the variables that are still empty
     for name in "${knob_ids[@]}"; do
@@ -66,10 +75,12 @@ done
 index=1
 # filling in applications and stream ids for user orientation
 for name in "${knob_apps[@]}"; do
+  
   indexSTR="KNOB${index}"
   appID=${values[$indexSTR]}
+  
   if [[ -n $appID ]]; then
-    appName=$(wpctl status | grep "${appID}\." 2>/dev/null)
+    appName=$(wpctl status | grep "${appID}\." | sed 's/[0-9|\.]*//g' 2>/dev/null)
   #echo "APPNAME: ${appName}"
     declare "$name=${appName}"
   fi
@@ -78,18 +89,19 @@ for name in "${knob_apps[@]}"; do
 done
 
 echo "========================================================="
-echo "Stream IDs under volume control per Knob:"
+echo "Stream IDs under volume control per Knob"
 echo "========================================================="
 for name in "${knob_ids[@]}"; do
-    printf '  %-4s = %s\n' "$name" "${!name}"
+    printf '  %-4s = \e[31m %s \e[0m\n' "$name" "${!name}"
 done
 
-echo "\n\n"
+echo 
+echo
 echo "========================================================="
-echo "Applications under volume control per Knob:"
+echo "Applications under volume control per Knob"
 echo "========================================================="
 for name in "${knob_apps[@]}"; do
-    printf '  %-4s = %s\n' "$name" "${!name}"
+    printf '  %-4s = \e[36m %s \e[0m \n' "$name" "${!name}"
     echo "-----------------------------------------------------"
 done
 
