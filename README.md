@@ -11,15 +11,18 @@ This script should also work with other MIDI controllers, but you will need to c
   - Stop
   - Next
   - Previous
+- MC Button switches between two outputs (ex. Speakers and Headphones), which are set on script start
 - Record Button Resets Terminal view, in case error messages made it unreadable  
 
 ## Implemented Mappings (Work in Progress)
-<img width="1858" height="595" alt="image" src="https://github.com/user-attachments/assets/89b9d4ef-0b0b-40d0-8875-dbab7d3e3b89" />
+<img width="1857" height="597" alt="image" src="https://github.com/user-attachments/assets/028673ea-e307-4cee-902a-fae5ac5bd914" />
+
 
 
 
 ## Terminal Output (Work In Progress)
-<img width="524" height="705" alt="image" src="https://github.com/user-attachments/assets/229bf169-aca9-47d7-986c-930d38bbe1f4" />
+<img width="704" height="560" alt="image" src="https://github.com/user-attachments/assets/39ee6f35-de0b-4cd1-9d7d-546397fc8f3e" />
+
 
 
 
