@@ -1,0 +1,182 @@
+#!/bin/bash
+declare -a knob_ids=(KNOB1 KNOB2 KNOB3 KNOB4 KNOB5 KNOB6 KNOB7 KNOB8)
+declare -a knob_apps=(APP1 APP2 APP3 APP4 APP5 APP6 APP7 APP8)
+
+
+# Initialize an associative array that will hold the values.
+declare -A values
+for name in "${knob_ids[@]}"; do
+    values["$name"]=''   # start empty
+done
+count_missing() {
+    local cnt=0
+    for name in "${knob_ids[@]}"; do
+        [[ -z "${values[$name]}" ]] && ((cnt++))
+    done
+    echo "$cnt"
+}
+
+
+filledAppliactions=0
+
+echo "---------------------------------"
+echo "Set Applications to control"
+echo "---------------------------------"
+echo "To stop filling applications just hit enter"
+
+# printing out streams to control
+wpctl status | grep "Streams" -A 40
+
+
+# asking user to fill in streams (applications)
+while (( $(count_missing) > 0 )); do
+    if [[ $filledAppliactions > 0 ]]; then
+      break 
+    fi
+    # Show a short status line so the user knows what’s left
+    echo "You can still fill in $(count_missing) applications."
+
+    # Iterate over the variables that are still empty
+    for name in "${knob_ids[@]}"; do
+        # Skip ones we already have
+        [[ -n "${values[$name]}" ]] && continue
+
+        read -rp "Enter value for $name: " input
+
+        # Reject empty input (pressing Enter without typing)
+        if [[ -z "$input" ]]; then
+            echo "  → Nothing entered – Stopping application collection"
+            filledAppliactions=1
+            break
+        fi
+
+        # Store the accepted value
+        values["$name"]="$input"
+        echo "  → $name set."
+    done
+    echo   # blank line for readability
+done
+
+# fill in input to variables 
+for name in "${knob_ids[@]}"; do
+    declare "$name=${values[$name]}"
+done
+
+
+index=1
+# filling in applications and stream ids for user orientation
+for name in "${knob_apps[@]}"; do
+  indexSTR="KNOB${index}"
+  appID=${values[$indexSTR]}
+  if [[ -n $appID ]]; then
+    appName=$(wpctl status | grep "${appID}\." 2>/dev/null)
+  #echo "APPNAME: ${appName}"
+    declare "$name=${appName}"
+  fi
+
+  index=$((index+1))
+done
+
+echo "========================================================="
+echo "Stream IDs under volume control per Knob:"
+echo "========================================================="
+for name in "${knob_ids[@]}"; do
+    printf '  %-4s = %s\n' "$name" "${!name}"
+done
+
+echo "\n\n"
+echo "========================================================="
+echo "Applications under volume control per Knob:"
+echo "========================================================="
+for name in "${knob_apps[@]}"; do
+    printf '  %-4s = %s\n' "$name" "${!name}"
+    echo "-----------------------------------------------------"
+done
+
+aseqdump -p  "X-TOUCH MINI" |
+{
+  # Ignore first two output lines of aseqdump (info and header)
+# Header:     Source  Event               Ch  Data
+# Fields:     20:0    Control change      0,  controller 11,      value   32
+# Variables:  src     ev1     ev2         ch  label1     ctrl_no  label2  ctrl_value
+
+  read
+  read
+  while IFS=" ," read src ev1 ev2 ch label1 ctrl_no label2 ctrl_value rest
+  do
+    case $ctrl_no in
+
+      # Knob 1
+      1) 
+        vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127}')
+        wpctl set-volume $KNOB1 $vol;;
+
+      # Knob 2
+      2) 
+        vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127}')
+        wpctl set-volume $KNOB2 $vol;;
+
+      # Knob 3
+      3) 
+        vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127}')
+        wpctl set-volume $KNOB3 $vol;;
+      # Knob 4
+      4) 
+        vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127}')
+        wpctl set-volume $KNOB3 $vol;;
+      # Knob 5
+      5) 
+        vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127}')
+        wpctl set-volume $KNOB3 $vol;;
+
+      # Knob 6
+      6) 
+        vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127}')
+        wpctl set-volume $KNOB3 $vol;;
+
+      # Knob 7
+      7) 
+        vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127}')
+        wpctl set-volume $KNOB3 $vol;;
+
+      # Knob 8
+      8) 
+        vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127}')
+        wpctl set-volume $KNOB3 $vol;;
+
+      # fader
+      9)
+        vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127*100}')  
+        wpctl set-volume @DEFAULT_AUDIO_SINK@ "${vol}%";;
+      # << button
+      18) 
+        if (( $ctrl_value == "127" )); 
+          then playerctl previous
+        fi
+        ;;
+
+        # >> button
+      19) 
+        if (( $ctrl_value == "127" )); 
+          then playerctl next
+        fi
+        ;;
+
+        # stop button
+      21) 
+        if (( $ctrl_value == "127" )); 
+          then playerctl stop
+        fi
+        ;;
+
+        # play button
+      22) 
+        if (( $ctrl_value == "127" )); 
+          then playerctl play
+        fi
+        ;;
+      
+      *) echo "Unknown Input";;
+    esac
+  done
+}
