@@ -19,9 +19,7 @@ This script should also work with other MIDI controllers, but you will need to c
 
 
 ## Terminal Output (Work In Progress)
-<img width="524" height="705" alt="image" src="https://github.com/user-attachments/assets/221ea123-e076-49c9-8249-749e7b6d0818" />
-
-
+<img width="524" height="705" alt="image" src="https://github.com/user-attachments/assets/229bf169-aca9-47d7-986c-930d38bbe1f4" />
 
 
 
