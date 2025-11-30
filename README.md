@@ -10,14 +10,17 @@ This script should also work with other MIDI controllers, but you will need to c
   - Play
   - Stop
   - Next
-  - Previous   
+  - Previous
+- Record Button Resets Terminal view, in case error messages made it unreadable  
 
 ## Implemented Mappings (Work in Progress)
-<img width="1861" height="586" alt="image" src="https://github.com/user-attachments/assets/4917a26a-6b60-478f-b0c0-9778e6928ab7" />
+<img width="1858" height="595" alt="image" src="https://github.com/user-attachments/assets/89b9d4ef-0b0b-40d0-8875-dbab7d3e3b89" />
+
 
 
 ## Terminal Output (Work In Progress)
-<img width="735" height="1518" alt="image" src="https://github.com/user-attachments/assets/f04bc6d8-7946-481d-bb98-98d28b3504d3" />
+<img width="524" height="705" alt="image" src="https://github.com/user-attachments/assets/221ea123-e076-49c9-8249-749e7b6d0818" />
+
 
 
 
