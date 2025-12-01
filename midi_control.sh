@@ -5,6 +5,44 @@ declare -a knob_apps=(APP1 APP2 APP3 APP4 APP5 APP6 APP7 APP8)
 
 
 # ===================[ FUNCTIONS ]===================
+setKnobValue() {
+
+  local -n ref_knob=$1
+  printStreamsToSet ${!ref_knob}
+  echo
+  
+  exec 3<&0
+  exec </dev/tty
+  read -rp "Enter value for ${!ref_knob}: " value
+
+  ref_knob=$value
+
+  exec 0<&3 3<&-
+
+  printconfiguration
+}
+
+
+printStreamsID() {
+  # printing out streams to control and colour IDs in red
+  wpctl status | sed -n '/Streams:/,/Video/p; /Video/q' \
+  | grep -oE '[0-9]+\. [^>]*' | grep -vE '^ *[0-9]+\. *output' \
+  | grep -vE '^ *[0-9]+\. *input'| sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
+}
+
+printOutputsID() {
+  # printing out outputs to control and colour IDs in red
+  wpctl status | sed -n '/Sinks:/,/Sources:/p; /Sources/q' \
+  | grep -oE '[0-9]+\. [^│]*' | sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
+}
+
+printStreamsToSet() {
+  echo "=================================================================="
+  echo "Set new application for ${1}"
+  echo "=================================================================="
+
+  printStreamsID
+}
 count_missing() {
     local cnt=0
     for name in "${knob_ids[@]}"; do
@@ -36,9 +74,9 @@ printconfiguration(){
 
   echo 
   echo
-  echo "========================================================="
+  echo "=================================================================="
   echo " Outputs"
-  echo "========================================================="
+  echo "=================================================================="
 
   if [[ -n $output1 && -n $output2 ]] then
 
@@ -63,18 +101,7 @@ printconfiguration(){
 
 }
 
-printStreamsID() {
-  # printing out streams to control and colour IDs in red
-  wpctl status | sed -n '/Streams:/,/Video/p; /Video/q' \
-  | grep -oE '[0-9]+\. [^>]*' | grep -vE '^ *[0-9]+\. *output' \
-  | grep -vE '^ *[0-9]+\. *input'| sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
-}
 
-printOutputsID() {
-  # printing out outputs to control and colour IDs in red
-  wpctl status | sed -n '/Sinks:/,/Sources:/p; /Sources/q' \
-  | grep -oE '[0-9]+\. [^│]*' | sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
-}
 
 # ===================[ SCRIPT START ]=================== 
 # Initialize an associative array that will hold the values.
@@ -229,19 +256,96 @@ aseqdump -p  "X-TOUCH MINI" |
         printconfiguration;;
 
 
-      # Knob 8
-      8) 
-        vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127}')
-        wpctl set-volume $KNOB3 $vol
-        printconfiguration;;
+      # Knob 8 or assignment KNOB 1
+      8)
+        if (( $label1 == "note")) then
+          if (( $ctrl_value == "127" )) then
+            setKnobValue KNOB1
+          fi
+          
+        else 
+          vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127}')
+          wpctl set-volume $KNOB3 $vol
+          printconfiguration
+        fi
+        ;;
 
-
-      # fader
+      # fader or assignment KNOB 2
+      # special event handling because fader has same controller ID
       9)
-        vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127*100}')  
-        wpctl set-volume @DEFAULT_AUDIO_SINK@ "${vol}%"
-        printconfiguration;;
-
+        case $ev2 in
+          change)
+            vol=$(awk -v v="$ctrl_value" 'BEGIN{printf "%.2f", v/127*100}')  
+            wpctl set-volume @DEFAULT_AUDIO_SINK@ "${vol}%"
+          ;;
+          on)
+            setKnobValue KNOB2
+          ;;
+        esac
+      ;;
+      # assignment KNOB 3
+      10)
+        if (( $label1 == "note")) then
+          if (( $ctrl_value == "127" )) then
+            setKnobValue KNOB3
+          fi
+        fi
+        ;;
+      # assignment KNOB 4
+      11)
+        if (( $label1 == "note")) then
+          if (( $ctrl_value == "127" )) then
+            setKnobValue KNOB4
+          fi
+      fi
+      ;;
+      # assignment KNOB 5
+      12)
+        if (( $label1 == "note")) then
+          if (( $ctrl_value == "127" )) then
+            setKnobValue KNOB5
+          fi
+      fi
+      ;;
+      # assignment KNOB 6
+      13)
+        if (( $label1 == "note")) then
+          if (( $ctrl_value == "127" )) then
+            setKnobValue KNOB6
+          fi
+      fi
+      ;;
+      # assignment KNOB 7
+      14)
+        if (( $label1 == "note")) then
+          if (( $ctrl_value == "127" )) then
+            setKnobValue KNOB7
+          fi
+      fi
+      ;;
+      # assignment KNOB 8
+      15)
+        if (( $label1 == "note")) then
+          if (( $ctrl_value == "127" )) then
+            setKnobValue KNOB8
+          fi
+      fi
+      ;;
+      # switch output
+      16)
+        if (( $ctrl_value == "127" )); then 
+          if (( $outputFlip == "1" )); 
+            then 
+              wpctl set-default $output1
+              printconfiguration
+              outputFlip=0
+          else
+              wpctl set-default $output2
+              printconfiguration
+              outputFlip=1
+          fi
+        fi
+        ;;
       # << button
       18) 
         if (( $ctrl_value == "127" )); 
@@ -277,21 +381,7 @@ aseqdump -p  "X-TOUCH MINI" |
         fi
         ;;
 
-      # switch output
-      16)
-        if (( $ctrl_value == "127" )); then 
-          if (( $outputFlip == "1" )); 
-            then 
-              wpctl set-default $output1
-              printconfiguration
-              outputFlip=0
-          else
-              wpctl set-default $output2
-              printconfiguration
-              outputFlip=1
-          fi
-        fi
-        ;;
+
       
       *) echo "Unknown Input";;
     esac
