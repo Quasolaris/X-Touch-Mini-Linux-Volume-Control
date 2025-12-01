@@ -51,13 +51,18 @@ count_missing() {
     echo "$cnt"
 }
 
+printHeader() {
+  echo "=================================================================="
+  printf "  \e[31mX-Touch MINI \e[36mLinux \e[32mVolume Control\e[0m\n"
+  echo "=================================================================="
+
+}
 printconfiguration(){
   # clear terminal and print header with configuration
   clear
 
-  echo "=================================================================="
-  printf "  \e[31mX-Touch MINI \e[36mLinux \e[32mVolume Control\e[0m\n"
-  echo "=================================================================="
+  printHeader
+  
   printf '\t    ID \t\t Volume \t Application'
   echo
   for name in "${knob_ids[@]}"; do
@@ -109,76 +114,10 @@ declare -A values
 for name in "${knob_ids[@]}"; do
     values["$name"]=''   # start empty
 done
+clear
 
-echo "================================="
-printf "\e[31mX-Touch MINI \e[36mLinux \e[32mVolume Control\e[0m\n"
-echo "================================="
+printHeader
 
-filledAppliactions=0
-
-echo "------------------------------------------"
-echo "Set Applications Audio Streams to control"
-echo "------------------------------------------"
-
-echo
-
-printStreamsID
-
-echo
-printf "To add application enter the ID (Numbers in \e[31mRED\e[0m)\n"
-echo "To stop filling applications hit enter without a value"
-echo
-
-
-# asking user to fill in streams (applications)
-while (( $(count_missing) > 0 )); do
-    if [[ $filledAppliactions > 0 ]]; then
-      break 
-    fi
-
-    # Iterate over the variables that are still empty
-    for name in "${knob_ids[@]}"; do
-        # Skip ones we already have
-        [[ -n "${values[$name]}" ]] && continue
-
-        read -rp "Enter value for $name: " input
-
-        # Reject empty input (pressing Enter without typing)
-        if [[ -z "$input" ]]; then
-            printf "\e[31m\n
-            Nothing entered – Stopping application collection\e[0m\n"
-            filledAppliactions=1
-            break
-        fi
-
-        # Store the accepted value
-        values["$name"]="$input"
-        echo "  → $name set."
-    done
-    echo   # blank line for readability
-done
-
-# fill in input to variables 
-for name in "${knob_ids[@]}"; do
-    declare "$name=${values[$name]}"
-done
-
-
-index=1
-# filling in applications and stream ids for user orientation
-for name in "${knob_apps[@]}"; do
-  
-  indexSTR="KNOB${index}"
-  appID=${values[$indexSTR]}
-  
-  if [[ -n $appID ]]; then
-    appName=$(wpctl status | grep "${appID}\." | sed 's/[0-9|\.]*//g' 2>/dev/null)
-  #echo "APPNAME: ${appName}"
-    declare "$name=${appName}"
-  fi
-
-  index=$((index+1))
-done
 
 echo
 echo "---------------------------------------------------------------------"
