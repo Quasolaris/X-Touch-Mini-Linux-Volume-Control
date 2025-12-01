@@ -1,13 +1,10 @@
 #!/bin/bash
+# ===================[ VARIABLES ]=================== 
 declare -a knob_ids=(KNOB1 KNOB2 KNOB3 KNOB4 KNOB5 KNOB6 KNOB7 KNOB8)
 declare -a knob_apps=(APP1 APP2 APP3 APP4 APP5 APP6 APP7 APP8)
 
 
-# Initialize an associative array that will hold the values.
-declare -A values
-for name in "${knob_ids[@]}"; do
-    values["$name"]=''   # start empty
-done
+# ===================[ FUNCTIONS ]===================
 count_missing() {
     local cnt=0
     for name in "${knob_ids[@]}"; do
@@ -66,6 +63,26 @@ printconfiguration(){
 
 }
 
+printStreamsID() {
+  # printing out streams to control and colour IDs in red
+  wpctl status | sed -n '/Streams:/,/Video/p; /Video/q' \
+  | grep -oE '[0-9]+\. [^>]*' | grep -vE '^ *[0-9]+\. *output' \
+  | grep -vE '^ *[0-9]+\. *input'| sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
+}
+
+printOutputsID() {
+  # printing out outputs to control and colour IDs in red
+  wpctl status | sed -n '/Sinks:/,/Sources:/p; /Sources/q' \
+  | grep -oE '[0-9]+\. [^│]*' | sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
+}
+
+# ===================[ SCRIPT START ]=================== 
+# Initialize an associative array that will hold the values.
+declare -A values
+for name in "${knob_ids[@]}"; do
+    values["$name"]=''   # start empty
+done
+
 echo "================================="
 printf "\e[31mX-Touch MINI \e[36mLinux \e[32mVolume Control\e[0m\n"
 echo "================================="
@@ -77,15 +94,15 @@ echo "Set Applications Audio Streams to control"
 echo "------------------------------------------"
 
 echo
-# printing out streams to control
-wpctl status | sed -n '/Streams:/,/Video/p; /Video/q'
+
+printStreamsID
 
 echo
-echo "To add application enter the ID (ex. 134. Strawberry -> 134 is the ID)"
-echo "To stop filling applications just hit enter without a value entered"
+printf "To add application enter the ID (Numbers in \e[31mRED\e[0m)\n"
+echo "To stop filling applications hit enter without a value"
 echo
 
-lastKnob=""
+
 # asking user to fill in streams (applications)
 while (( $(count_missing) > 0 )); do
     if [[ $filledAppliactions > 0 ]]; then
@@ -101,9 +118,9 @@ while (( $(count_missing) > 0 )); do
 
         # Reject empty input (pressing Enter without typing)
         if [[ -z "$input" ]]; then
-            printf "\e[31m  → Nothing entered – Stopping application collection\e[0m\n"
+            printf "\e[31m\n
+            Nothing entered – Stopping application collection\e[0m\n"
             filledAppliactions=1
-            lastKnob=$name
             break
         fi
 
@@ -141,7 +158,8 @@ echo "---------------------------------------------------------------------"
 echo "Choose Output IDs for switching (if not needed press enter, two times)"
 echo "---------------------------------------------------------------------"
 echo
-wpctl status | sed -n '/Sinks:/,/Sources:/p; /Sources/q'
+
+printOutputsID
 
 read -p "Enter ID of OUTPUT 1: " output1
 read -p "Enter ID of OUTPUT 2: " output2
