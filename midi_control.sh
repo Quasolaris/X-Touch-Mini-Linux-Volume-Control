@@ -22,6 +22,27 @@ setKnobValue() {
   printconfiguration
 }
 
+setOutputID() {
+  echo
+  echo "---------------------------------------------------------------------"
+  echo "Choose Output IDs for switching (if not needed press enter, two times)"
+  echo "---------------------------------------------------------------------"
+  echo
+
+  printOutputsID
+
+  exec 3<&0
+  exec </dev/tty
+
+
+
+  read -p "Enter ID of OUTPUT 1: " output1
+  read -p "Enter ID of OUTPUT 2: " output2
+
+  exec 0<&3 3<&-
+
+  printconfiguration
+}
 
 printStreamsID() {
   # printing out streams to control and colour IDs in red
@@ -115,20 +136,6 @@ for name in "${knob_ids[@]}"; do
     values["$name"]=''   # start empty
 done
 clear
-
-printHeader
-
-
-echo
-echo "---------------------------------------------------------------------"
-echo "Choose Output IDs for switching (if not needed press enter, two times)"
-echo "---------------------------------------------------------------------"
-echo
-
-printOutputsID
-
-read -p "Enter ID of OUTPUT 1: " output1
-read -p "Enter ID of OUTPUT 2: " output2
 
 # used for setting output
 outputFlip=0
@@ -285,6 +292,13 @@ aseqdump -p  "X-TOUCH MINI" |
           fi
         fi
         ;;
+
+      17)
+        if (( $ctrl_value == "127" )); then 
+          setOutputID
+        fi
+        ;;
+
       # << button
       18) 
         if (( $ctrl_value == "127" )); 
