@@ -5,6 +5,8 @@ This script should also work with other MIDI controllers, but you will need to c
 
 ## Functionalities
 - Knobs 1 - 8 control the volume of 8 sources chosen on script start (0-127 mapped from 0.0 to 1.0)
+- Knob buttons 1 - 8 (See image below) used to map application
+  - Click button and choose an application from the list   
 - Fader control the main volume (0-127 mapped from 0 to 100%)
 - Buttons mapped:
   - Play
@@ -16,7 +18,8 @@ This script should also work with other MIDI controllers, but you will need to c
 - Record Button Resets Terminal view, in case error messages made it unreadable  
 
 ## Implemented Mappings (Work in Progress)
-<img width="1857" height="597" alt="image" src="https://github.com/user-attachments/assets/028673ea-e307-4cee-902a-fae5ac5bd914" />
+<img width="1317" height="421" alt="image" src="https://github.com/user-attachments/assets/d130180e-9f0d-4fc2-ad39-6b158b58a67e" />
+
 
 
 
