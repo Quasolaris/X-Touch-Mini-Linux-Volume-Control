@@ -4,7 +4,7 @@ A simple script that gives the X-Touch Mini by Behringer the ability to control 
 This script should also work with other MIDI controllers, but you will need to change the mappings, see the Sources chapter for an explanation on how to do it.
 
 ## Functionalities
-- Knobs 1 - 8 control the volume of 8 sources chosen on script start (0-127 mapped from 0.0 to 1.0)
+- Knobs 1 - 8 control the volume of 8 sources chosen with trhe buttons beneath the knobs (0-127 mapped from 0.0 to 1.0)
 - Knob buttons 1 - 8 (See image below) used to map application
   - Click button and choose an application from the list   
 - Fader control the main volume (0-127 mapped from 0 to 100%)
@@ -13,7 +13,7 @@ This script should also work with other MIDI controllers, but you will need to c
   - Stop
   - Next
   - Previous
-- MC Button switches between two outputs (ex. Speakers and Headphones), which are set on script start
+- MC Button switches between two outputs (ex. Speakers and Headphones), which are set via button next to it
 - Button next to MC (Row 2 button on the bottom) set the outputs
 - Record Button Resets Terminal view, in case error messages made it unreadable  
 
