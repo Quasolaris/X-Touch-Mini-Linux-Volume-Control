@@ -49,12 +49,21 @@ printStreamsID() {
   wpctl status | sed -n '/Streams:/,/Video/p; /Video/q' \
   | grep -oE '[0-9]+\. [^>]*' | grep -vE '^ *[0-9]+\. *output' \
   | grep -vE '^ *[0-9]+\. *input'| sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
+
+
 }
 
 printOutputsID() {
   # printing out outputs to control and colour IDs in red
   wpctl status | sed -n '/Sinks:/,/Sources:/p; /Sources/q' \
   | grep -oE '[0-9]+\. [^│]*' | sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
+
+
+  # looking for surround sinks to choose (use QJackCtl for control of Surround)
+  echo "-----------------------[SURROUND OUTPUTS}-----------------------"
+  wpctl status | sed -n '/Filters:/,/Streams/p; /Streams/q' | grep "surround" | grep "Audio/Sink" \
+  | grep -oE '[0-9]+\. [^>]*' | grep -vE '^ *[0-9]+\. *output' \
+  | grep -vE '^ *[0-9]+\. *input'| sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
 }
 
 printStreamsToSet() {
