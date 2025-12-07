@@ -24,9 +24,9 @@ setKnobValue() {
 
 setOutputID() {
   echo
-  echo "---------------------------------------------------------------------"
-  echo "Choose Output IDs for switching (if not needed press enter, two times)"
-  echo "---------------------------------------------------------------------"
+  echo "-----------------------------------------------------------------"
+  echo "Choose Outputs to control (if not needed press enter, two times)"
+  echo "-----------------------------------------------------------------"
   echo
 
   printOutputsID
@@ -46,9 +46,14 @@ setOutputID() {
 
 printStreamsID() {
   # printing out streams to control and colour IDs in red
+  # monitor_(FL|FR|FC|SR|RR|LFE|SL|RL) is to ignore channels if surround is configured on system
+  # (PulseAudio Volume Control|GNOME Settings) is to filter out GNOME and Pulse specific entries that are not needed, insert applications to ignore there
   wpctl status | sed -n '/Streams:/,/Video/p; /Video/q' \
   | grep -oE '[0-9]+\. [^>]*' | grep -vE '^ *[0-9]+\. *output' \
-  | grep -vE '^ *[0-9]+\. *input'| sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
+  | grep -vE '^ *[0-9]+\. *input' \
+  | grep -vE 'monitor_(FL|FR|FC|SR|RR|LFE|SL|RL|MONO)' \
+  | grep -vE '(PulseAudio Volume Control|GNOME Settings)' \
+  | sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
 
 
 }
@@ -60,10 +65,14 @@ printOutputsID() {
 
 
   # looking for surround sinks to choose (use QJackCtl for control of Surround)
-  echo "-----------------------[SURROUND OUTPUTS}-----------------------"
+  echo "-----------------------[SURROUND OUTPUTS}------------------------"
   wpctl status | sed -n '/Filters:/,/Streams/p; /Streams/q' | grep "surround" | grep "Audio/Sink" \
   | grep -oE '[0-9]+\. [^>]*' | grep -vE '^ *[0-9]+\. *output' \
   | grep -vE '^ *[0-9]+\. *input'| sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
+  echo
+  echo "-----------------------------------------------------------------"
+  echo
+
 }
 
 printStreamsToSet() {
@@ -124,10 +133,10 @@ printconfiguration(){
       echo "-----------------------------------------------------"
     else
       outputString=$(wpctl status | grep "${output1}\." 2>/dev/null)
-      printf "OUTPUT 1: ${outputString}\n\n\t $(wpctl get-volume $output1)\n"
+      printf "OUTPUT 1: ${outputString}\n\n\t\n"
       echo "-----------------------------------------------------"
       outputString=$(wpctl status | grep "${output2}\." 2>/dev/null)
-      printf "OUTPUT 2: \e[32m${outputString}\n\e[0m\n\t $(wpctl get-volume $output2)\n"
+      printf "OUTPUT 2: \e[32m${outputString}\n\e[0m\n\t"
       echo "-----------------------------------------------------"
     fi
   else
