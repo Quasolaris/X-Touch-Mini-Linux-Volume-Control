@@ -1,10 +1,10 @@
 # Behringer X-Touch MINI Script to control your audio sources
-A simple script that when run, asks for what applications to control and then gives the X-Touch Mini the ability to control the volumes of the audio streams (ex. Browser, Discord, Music Player etc.). Fader controls master volume and play, next, previous and stop buttons are also mapped.
+A simple script that gives the X-Touch Mini by Behringer the ability to control the volumes of audio streams (ex. Browser, Discord, Music Player etc.). The sources to control are set through clicking the buttons beneath the knobs. To set outputs to switch from and to (ex. speakers to headphones and back), click the button next to MC. For all mappings see the image under *Implemented Mappings*.
 
 This script should also work with other MIDI controllers, but you will need to change the mappings, see the Sources chapter for an explanation on how to do it.
 
 ## Functionalities
-- Knobs 1 - 8 control the volume of 8 sources chosen on script start (0-127 mapped from 0.0 to 1.0)
+- Knobs 1 - 8 control the volume of 8 sources chosen with the buttons beneath the knobs (0-127 mapped from 0.0 to 1.0)
 - Knob buttons 1 - 8 (See image below) used to map application
   - Click button and choose an application from the list   
 - Fader control the main volume (0-127 mapped from 0 to 100%)
@@ -13,22 +13,28 @@ This script should also work with other MIDI controllers, but you will need to c
   - Stop
   - Next
   - Previous
-- MC Button switches between two outputs (ex. Speakers and Headphones), which are set on script start
+- MC Button switches between two outputs (ex. Speakers and Headphones), which are set via button next to it
 - Button next to MC (Row 2 button on the bottom) set the outputs
 - Record Button Resets Terminal view, in case error messages made it unreadable  
 
-## Implemented Mappings (Work in Progress)
-<img width="1317" height="421" alt="image" src="https://github.com/user-attachments/assets/d130180e-9f0d-4fc2-ad39-6b158b58a67e" />
+## Implemented Mappings
+<p align="center">
+<img width="1080" height="340" alt="image" src="https://github.com/user-attachments/assets/a54908f6-a30a-49a2-90eb-b2600ce210aa" />
+</p>
 
+## Terminal Output
 
+<p align="center">
+<img width="704" height="550" alt="image" src="https://github.com/user-attachments/assets/1083599e-cd7e-4864-8902-815acc7fb7b7" />
+</p>
 
+<p align="center">
 
+  Set Sources to control     |  Set Outputs to switch
+:-------------------------:|:-------------------------:
+<img width="437" height="488" alt="sources selection" src="https://github.com/user-attachments/assets/6e7585c6-e786-47a9-9cb5-10c88fd05843" /> | <img width="437" height="488" alt="output selection" src="https://github.com/user-attachments/assets/1feeec5b-4482-43f4-be5d-cec026c4ab60" />
 
-## Terminal Output (Work In Progress)
-<img width="704" height="560" alt="image" src="https://github.com/user-attachments/assets/39ee6f35-de0b-4cd1-9d7d-546397fc8f3e" />
-
-
-
+</p>
 
 ## Dependencies
 - [playerctl](https://man.archlinux.org/man/playerctl.1.en)
