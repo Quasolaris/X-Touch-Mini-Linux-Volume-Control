@@ -50,6 +50,19 @@ This script should also work with other MIDI controllers, but you will need to c
 5. Follow the instructions
 6. Control your volumes
 
+### Set outputs sinks to have them already selected when script is run
+You can set the outputs to have them automatically assigned on script run. To do this you need to replace the two variable values with your outputs:
+```bash
+#!/bin/bash
+# ===================[ VARIABLES ]=================== 
+
+# set your outputs here, replace with name of your output sinks (copy from running scrip)
+output_config_1="Sound Blaster Play! 3 Analog Stereo"
+output_config_2="effect_input.virtual-surround-7.1"
+```
+
+Then you can run the script with the `-c` flag `midi_control.sh -c`, this will assign the set outputs to the MC-Button. When the selection is empty when you run the script, then the sinks were not found and you may have a typo in the output name.
+
 
 ## Instructions to use with other MIDI Controller
 Same steps as for X-Touch MINI but you maybe need to change the mappings, for that read the article in the Sources chapter of the README.
