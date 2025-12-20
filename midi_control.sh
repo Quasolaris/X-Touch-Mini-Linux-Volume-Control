@@ -1,5 +1,10 @@
 #!/bin/bash
 # ===================[ VARIABLES ]=================== 
+
+# set your outputs here, replace with name of your output sinks (copy from running scrip)
+output_config_1="Sound Blaster Play! 3 Analog Stereo"
+output_config_2="effect_input.virtual-surround-7.1"
+
 declare -a knob_ids=(KNOB1 KNOB2 KNOB3 KNOB4 KNOB5 KNOB6 KNOB7 KNOB8)
 declare -a knob_apps=(APP1 APP2 APP3 APP4 APP5 APP6 APP7 APP8)
 
@@ -65,7 +70,9 @@ printOutputsID() {
 
 
   # looking for surround sinks to choose (use QJackCtl for control of Surround)
+  echo
   echo "-----------------------[SURROUND OUTPUTS}------------------------"
+  echo
   wpctl status | sed -n '/Filters:/,/Streams/p; /Streams/q' | grep "surround" | grep "Audio/Sink" \
   | grep -oE '[0-9]+\. [^>]*' | grep -vE '^ *[0-9]+\. *output' \
   | grep -vE '^ *[0-9]+\. *input'| sed -E 's/^([0-9]+)\./\x1b[31m\1\x1b[0m -/'
@@ -126,17 +133,17 @@ printconfiguration(){
 
     outputString=$(wpctl status | grep "${output1}\." 2>/dev/null)
     if [[ $outputString == *"│  * "* ]]; then
-      printf "OUTPUT 1: \e[32m ${outputString}\n\e[0m\n\t $(wpctl get-volume $output1)\n"
+      printf "OUTPUT 1: \e[32m ${outputString}\n\e[0m\n\t\n"
       echo "-----------------------------------------------------"
       outputString=$(wpctl status | grep "${output2}\." 2>/dev/null)
-      printf "OUTPUT 2: ${outputString}\n\n\t $(wpctl get-volume $output2)\n"
+      printf "OUTPUT 2: ${outputString}\n\n"
       echo "-----------------------------------------------------"
     else
       outputString=$(wpctl status | grep "${output1}\." 2>/dev/null)
       printf "OUTPUT 1: ${outputString}\n\n\t\n"
       echo "-----------------------------------------------------"
       outputString=$(wpctl status | grep "${output2}\." 2>/dev/null)
-      printf "OUTPUT 2: \e[32m${outputString}\n\e[0m\n\t"
+      printf "OUTPUT 2: \e[32m${outputString}\n\e[0m\n"
       echo "-----------------------------------------------------"
     fi
   else
@@ -145,6 +152,17 @@ printconfiguration(){
 
 }
 
+# ===================[ CONFIGURATION ]=================== 
+
+if [ "$1" = "-c" ]; then
+    output1=$(wpctl status | grep -m 1 "$output_config_1" |  sed -r 's/^[^0-9]*([0-9]+).*$/\1/' | sed 's/\.//' | sed 's/\*//')
+    output2=$(wpctl status | grep -m 1 "$output_config_2" |  sed -r 's/^[^0-9]*([0-9]+).*$/\1/' | sed 's/\.//' | sed 's/\*//')
+elif [ "$1" = "-h" ]; then
+    echo "- Do not set a flag to run in normal mode (no preset outputs)
+
+- Use -c flag to set output sources, set inside script first few lines, look for output_config_1 and output_config_2 variables"
+    exit 1
+fi
 
 
 # ===================[ SCRIPT START ]=================== 
