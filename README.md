@@ -1,4 +1,13 @@
 # Behringer X-Touch MINI Script to control your audio sources
+
+## This repository moved to Codeberg
+GitHub is no longer a place where I want to upload and share my code, for different reasons. I therefore decided to move my repositories to Codeberg, you can find this migrated repository here:
+
+https://codeberg.org/Quasolaris/X-Touch-Mini-Linux-Volume-Control
+
+I will leave the repositories as they are for now on GitHub. Later this year I will archive them.
+
+---
 A simple script that gives the X-Touch Mini by Behringer the ability to control the volumes of audio streams (ex. Browser, Discord, Music Player etc.). The sources to control are set through clicking the buttons beneath the knobs. To set outputs to switch from and to (ex. speakers to headphones and back), click the button next to MC. For all mappings see the image under *Implemented Mappings*.
 
 This script should also work with other MIDI controllers, but you will need to change the mappings, see the Sources chapter for an explanation on how to do it.
